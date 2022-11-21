@@ -1,155 +1,155 @@
 -- 菜单
 CREATE TABLE `sys_menu` (
   `menu_id` bigint NOT NULL AUTO_INCREMENT,
-  `parent_id` bigint COMMENT '父菜单ID，一级菜单为0',
-  `name` varchar(50) COMMENT '菜单名称',
-  `url` varchar(200) COMMENT '菜单URL',
-  `perms` varchar(500) COMMENT '授权(多个用逗号分隔，如：user:list,user:create)',
-  `type` int COMMENT '类型   0：目录   1：菜单   2：按钮',
-  `icon` varchar(50) COMMENT '菜单图标',
-  `order_num` int COMMENT '排序',
+  `parent_id` bigint COMMENT 'parent menu ID，first menu 0',
+  `name` varchar(50) COMMENT 'menu name',
+  `url` varchar(200) COMMENT 'menu id ',
+  `perms` varchar(500) COMMENT 'Authorization(user:list,user:create)',
+  `type` int COMMENT 'type   0：contents   1：menu   2：button',
+  `icon` varchar(50) COMMENT 'menu icon',
+  `order_num` int COMMENT 'sort',
   PRIMARY KEY (`menu_id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='菜单管理';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='menu management';
 
 -- 系统用户
 CREATE TABLE `sys_user` (
   `user_id` bigint NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL COMMENT '用户名',
-  `password` varchar(100) COMMENT '密码',
-  `salt` varchar(20) COMMENT '盐',
-  `email` varchar(100) COMMENT '邮箱',
-  `mobile` varchar(100) COMMENT '手机号',
-  `status` tinyint COMMENT '状态  0：禁用   1：正常',
-  `create_user_id` bigint(20) COMMENT '创建者ID',
-  `create_time` datetime COMMENT '创建时间',
+  `username` varchar(50) NOT NULL COMMENT 'user name',
+  `password` varchar(100) COMMENT 'password',
+  `salt` varchar(20) COMMENT 'salt',
+  `email` varchar(100) COMMENT 'mail',
+  `mobile` varchar(100) COMMENT 'phone',
+  `status` tinyint COMMENT 'status  0：disabled   1：enable',
+  `create_user_id` bigint(20) COMMENT 'creator id',
+  `create_time` datetime COMMENT 'created time',
   PRIMARY KEY (`user_id`),
   UNIQUE INDEX (`username`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='系统用户';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='sys user';
 
 -- 系统用户Token
 CREATE TABLE `sys_user_token` (
   `user_id` bigint(20) NOT NULL,
   `token` varchar(100) NOT NULL COMMENT 'token',
-  `expire_time` datetime DEFAULT NULL COMMENT '过期时间',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `expire_time` datetime DEFAULT NULL COMMENT 'expired time',
+  `update_time` datetime DEFAULT NULL COMMENT 'updated time',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `token` (`token`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='系统用户Token';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='sys user Token';
 
 -- 系统验证码
 CREATE TABLE `sys_captcha` (
   `uuid` char(36) NOT NULL COMMENT 'uuid',
-  `code` varchar(6) NOT NULL COMMENT '验证码',
-  `expire_time` datetime DEFAULT NULL COMMENT '过期时间',
+  `code` varchar(6) NOT NULL COMMENT 'CAPTCHA code',
+  `expire_time` datetime DEFAULT NULL COMMENT 'expired time',
   PRIMARY KEY (`uuid`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='系统验证码';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='sys CAPTCHA code';
 
 -- 角色
 CREATE TABLE `sys_role` (
   `role_id` bigint NOT NULL AUTO_INCREMENT,
-  `role_name` varchar(100) COMMENT '角色名称',
-  `remark` varchar(100) COMMENT '备注',
-  `create_user_id` bigint(20) COMMENT '创建者ID',
-  `create_time` datetime COMMENT '创建时间',
+  `role_name` varchar(100) COMMENT 'role name',
+  `remark` varchar(100) COMMENT 'remark',
+  `create_user_id` bigint(20) COMMENT 'creator ID',
+  `create_time` datetime COMMENT 'create time',
   PRIMARY KEY (`role_id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='角色';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='role';
 
 -- 用户与角色对应关系
 CREATE TABLE `sys_user_role` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` bigint COMMENT '用户ID',
-  `role_id` bigint COMMENT '角色ID',
+  `user_id` bigint COMMENT 'user ID',
+  `role_id` bigint COMMENT 'role ID',
   PRIMARY KEY (`id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='用户与角色对应关系';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='relationship between user and role';
 
 -- 角色与菜单对应关系
 CREATE TABLE `sys_role_menu` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `role_id` bigint COMMENT '角色ID',
-  `menu_id` bigint COMMENT '菜单ID',
+  `role_id` bigint COMMENT 'role ID',
+  `menu_id` bigint COMMENT 'menu ID',
   PRIMARY KEY (`id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='角色与菜单对应关系';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='relationship between user and menu';
 
 -- 系统配置信息
 CREATE TABLE `sys_config` (
 	`id` bigint NOT NULL AUTO_INCREMENT,
 	`param_key` varchar(50) COMMENT 'key',
 	`param_value` varchar(2000) COMMENT 'value',
-	`status` tinyint DEFAULT 1 COMMENT '状态   0：隐藏   1：显示',
-	`remark` varchar(500) COMMENT '备注',
+	`status` tinyint DEFAULT 1 COMMENT 'status   0：hide   1：visible',
+	`remark` varchar(500) COMMENT 'remark',
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX (`param_key`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='系统配置信息表';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='sys config';
 
 
 -- 系统日志
 CREATE TABLE `sys_log` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) COMMENT '用户名',
-  `operation` varchar(50) COMMENT '用户操作',
-  `method` varchar(200) COMMENT '请求方法',
-  `params` varchar(5000) COMMENT '请求参数',
-  `time` bigint NOT NULL COMMENT '执行时长(毫秒)',
-  `ip` varchar(64) COMMENT 'IP地址',
-  `create_date` datetime COMMENT '创建时间',
+  `username` varchar(50) COMMENT 'user name',
+  `operation` varchar(50) COMMENT 'user operation',
+  `method` varchar(200) COMMENT 'method',
+  `params` varchar(5000) COMMENT 'params',
+  `time` bigint NOT NULL COMMENT 'time',
+  `ip` varchar(64) COMMENT 'IP',
+  `create_date` datetime COMMENT 'create time',
   PRIMARY KEY (`id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='系统日志';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='sys log';
 
 
 -- 文件上传
 CREATE TABLE `sys_oss` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `url` varchar(200) COMMENT 'URL地址',
-  `create_date` datetime COMMENT '创建时间',
+  `url` varchar(200) COMMENT 'URL',
+  `create_date` datetime COMMENT 'create time',
   PRIMARY KEY (`id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='文件上传';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='upload documentation';
 
 
 -- 定时任务
 CREATE TABLE `schedule_job` (
-  `job_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务id',
-  `bean_name` varchar(200) DEFAULT NULL COMMENT 'spring bean名称',
-  `params` varchar(2000) DEFAULT NULL COMMENT '参数',
-  `cron_expression` varchar(100) DEFAULT NULL COMMENT 'cron表达式',
-  `status` tinyint(4) DEFAULT NULL COMMENT '任务状态  0：正常  1：Stop',
-  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `job_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'task id',
+  `bean_name` varchar(200) DEFAULT NULL COMMENT 'spring bean name',
+  `params` varchar(2000) DEFAULT NULL COMMENT 'params',
+  `cron_expression` varchar(100) DEFAULT NULL COMMENT 'cron expression',
+  `status` tinyint(4) DEFAULT NULL COMMENT 'status  0：running  1：paused',
+  `remark` varchar(255) DEFAULT NULL COMMENT 'remark',
+  `create_time` datetime DEFAULT NULL COMMENT 'create time',
   PRIMARY KEY (`job_id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='定时任务';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='schedule job';
 
 -- 定时任务日志
 CREATE TABLE `schedule_job_log` (
-  `log_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务日志id',
-  `job_id` bigint(20) NOT NULL COMMENT '任务id',
-  `bean_name` varchar(200) DEFAULT NULL COMMENT 'spring bean名称',
-  `params` varchar(2000) DEFAULT NULL COMMENT '参数',
-  `status` tinyint(4) NOT NULL COMMENT '任务状态    0：成功    1：失败',
-  `error` varchar(2000) DEFAULT NULL COMMENT '失败信息',
-  `times` int(11) NOT NULL COMMENT '耗时(单位：毫秒)',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `log_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'name id',
+  `job_id` bigint(20) NOT NULL COMMENT 'name id',
+  `bean_name` varchar(200) DEFAULT NULL COMMENT 'spring bean',
+  `params` varchar(2000) DEFAULT NULL COMMENT 'param',
+  `status` tinyint(4) NOT NULL COMMENT 'task    0：success    1：fail',
+  `error` varchar(2000) DEFAULT NULL COMMENT 'fail info',
+  `times` int(11) NOT NULL COMMENT 'time',
+  `create_time` datetime DEFAULT NULL COMMENT 'create time',
   PRIMARY KEY (`log_id`),
   KEY `job_id` (`job_id`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='定时任务日志';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='create time';
 
 
 
 -- 用户表
 CREATE TABLE `tb_user` (
   `user_id` bigint NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL COMMENT '用户名',
-  `mobile` varchar(20) NOT NULL COMMENT '手机号',
-  `password` varchar(64) COMMENT '密码',
-  `create_time` datetime COMMENT '创建时间',
+  `username` varchar(50) NOT NULL COMMENT 'user name',
+  `mobile` varchar(20) NOT NULL COMMENT 'phone',
+  `password` varchar(64) COMMENT 'password',
+  `create_time` datetime COMMENT 'create time',
   PRIMARY KEY (`user_id`),
   UNIQUE INDEX (`username`)
-) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='用户';
+) ENGINE=`InnoDB` DEFAULT CHARACTER SET utf8mb4 COMMENT='user';
 
 
 
 
 
 
--- 初始数据 
+-- 初始数据
 INSERT INTO `sys_user` (`user_id`, `username`, `password`, `salt`, `email`, `mobile`, `status`, `create_user_id`, `create_time`) VALUES ('1', 'admin', '9ec9750e709431dad22365cabc5c625482e574c74adaebba7dd02f1129e4ce1d', 'YzcmCZNvbXocrsz9dm8e', 'root@renren.io', '13612345678', '1', '1', '2016-11-11 11:11:11');
 
 INSERT INTO `sys_menu`(`menu_id`, `parent_id`, `name`, `url`, `perms`, `type`, `icon`, `order_num`) VALUES (1, 0, 'System Management', NULL, NULL, 0, 'system', 0);
@@ -251,7 +251,7 @@ REFERENCES QRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP))
 ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE QRTZ_SIMPROP_TRIGGERS
-  (          
+  (
     SCHED_NAME VARCHAR(120) NOT NULL,
     TRIGGER_NAME VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
@@ -267,7 +267,7 @@ CREATE TABLE QRTZ_SIMPROP_TRIGGERS
     BOOL_PROP_1 VARCHAR(1) NULL,
     BOOL_PROP_2 VARCHAR(1) NULL,
     PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
-    FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP) 
+    FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
     REFERENCES QRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP))
 ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

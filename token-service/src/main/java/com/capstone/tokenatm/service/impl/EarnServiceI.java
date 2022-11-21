@@ -123,8 +123,8 @@ public class EarnServiceI implements EarnService {
     }
 
     public void init() throws JSONException, IOException {
-        logRepository.deleteAll();
         tokenRepository.deleteAll();
+        logRepository.deleteAll();
         Map<String, Student> studentMap = getStudents();
         studentMap.entrySet().stream().forEach(e -> {
             Student student = e.getValue();
@@ -176,12 +176,13 @@ public class EarnServiceI implements EarnService {
     }
 
     public Iterable<TokenCountEntity> manualSyncTokens() throws JSONException, IOException {
+        Iterable<SpendLogEntity> originalLogs = logRepository.findAll();
         init();
         syncModule();
-        syncLog();
         for (String surveyId : tokenSurveyIds) {
             syncSurvey(surveyId);
         }
+        syncLog(originalLogs);
         return tokenRepository.findAll();
     }
 
@@ -239,14 +240,14 @@ public class EarnServiceI implements EarnService {
         }
     }
 
-    private void syncLog() {
+    private void syncLog(Iterable<SpendLogEntity> logs) {
         try {
             Map<String, Student> studentMap = getStudents();
-            Iterable<SpendLogEntity> logs = logRepository.findAll();
             for (SpendLogEntity log : logs) {
                 String user_id = String.valueOf(log.getUserId());
                 Integer token_count = log.getTokenCount();
                 if (log.getType().equals("spend")) {
+                    System.out.println(user_id + " spend " + token_count + " tokens");
                     updateTokenEntity(studentMap, user_id, -token_count, log.getSource());
                 }
             }
@@ -270,8 +271,6 @@ public class EarnServiceI implements EarnService {
             Date deadline = survey_deadlines.get(i);
             scheduler.schedule(() -> syncSurvey(surveyId), deadline);
         }
-
-        scheduler.schedule(() -> syncLog(), module_deadline);
     }
 
     @Override
@@ -379,7 +378,6 @@ public class EarnServiceI implements EarnService {
                     String assignment_id = ((JSONObject) ((JSONArray) ((JSONObject) result.get(i)).get("submissions")).get(j)).get("assignment_id").toString();
                     String score = ((JSONObject) ((JSONArray) ((JSONObject) result.get(i)).get("submissions")).get(j)).get("score").toString();
                     grades.add(score + "(" + assignment_id + ")");
-
                 }
                 String user_id = ((JSONObject) result.get(i)).get("user_id").toString();
                 students_data.put("(" + user_id + ")", grades);
@@ -699,7 +697,9 @@ public class EarnServiceI implements EarnService {
                                 "overdue",
                                 -1);
                     }
-                    String status = StreamSupport.stream(logRepository.findByUserIdAssignmentId(user_id, resubmissionId).spliterator(), false).count() > 0 ? "requested" : "none";
+                    String status = StreamSupport.stream(
+                            logRepository.findByUserIdAssignmentId(user_id, "Assignment: " + resubmission.getName()).spliterator(), false).count() > 0 ?
+                            "requested" : "none";
                     return new AssignmentStatus(assignment.getName(),
                             assignment.getId(),
                             resubmission.getDueDate(),
